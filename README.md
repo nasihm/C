@@ -1,31 +1,34 @@
-# C
-1. Stack Implementation Using Array (User Input)
+Here’s a clean README-ready format with separate C code blocks and clear headings:
 
+# Algorithms in C
+
+## 1. Stack Implementation Using Array
+
+```c
 #include <stdio.h>
-#define SIZE 5
+#define MAX 100
 
-int stack[SIZE];
+int stack[MAX];
 int top = -1;
 
-void push(int value) {
-    if (top == SIZE - 1)
+void push(int x) {
+    if (top == MAX - 1)
         printf("Stack Overflow\n");
     else
-        stack[++top] = value;
+        stack[++top] = x;
 }
 
 void pop() {
     if (top == -1)
         printf("Stack Underflow\n");
     else
-        printf("Popped: %d\n", stack[top--]);
+        top--;
 }
 
 void display() {
     if (top == -1)
-        printf("Stack Empty\n");
+        printf("Stack is empty\n");
     else {
-        printf("Stack: ");
         for (int i = top; i >= 0; i--)
             printf("%d ", stack[i]);
         printf("\n");
@@ -33,162 +36,122 @@ void display() {
 }
 
 int main() {
-    int choice, value;
-    while (1) {
-        printf("\n1.Push\n2.Pop\n3.Display\n4.Exit\nEnter choice: ");
-        scanf("%d", &choice);
-        switch (choice) {
-            case 1:
-                printf("Enter value: ");
-                scanf("%d", &value);
-                push(value);
-                break;
-            case 2:
-                pop();
-                break;
-            case 3:
-                display();
-                break;
-            case 4:
-                return 0;
-            default:
-                printf("Invalid choice\n");
-        }
-    }
-}
-
-Sample Output:
-
-1.Push
-2.Pop
-3.Display
-4.Exit
-Enter choice: 1
-Enter value: 10
-Enter choice: 1
-Enter value: 20
-Enter choice: 3
-Stack: 20 10
-Enter choice: 2
-Popped: 20
-Enter choice: 3
-Stack: 10
-
-
----
-
-2. Infix to Postfix Conversion (User Input)
-
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-
-char stack[50];
-int top = -1;
-
-void push(char c) { stack[++top] = c; }
-char pop() { return stack[top--]; }
-char peek() { return stack[top]; }
-
-int precedence(char c) {
-    if (c == '^') return 3;
-    if (c == '*' || c == '/') return 2;
-    if (c == '+' || c == '-') return 1;
+    push(10);
+    push(20);
+    push(30);
+    display();
+    pop();
+    display();
     return 0;
 }
 
-void infixToPostfix(char infix[]) {
-    char postfix[50];
-    int i = 0, k = 0;
-    while (infix[i] != '\0') {
-        if (isalnum(infix[i]))
-            postfix[k++] = infix[i];
-        else if (infix[i] == '(')
-            push(infix[i]);
-        else if (infix[i] == ')') {
-            while (top != -1 && peek() != '(')
-                postfix[k++] = pop();
-            pop();
-        } else {
-            while (top != -1 && precedence(peek()) >= precedence(infix[i]))
-                postfix[k++] = pop();
-            push(infix[i]);
-        }
-        i++;
-    }
-    while (top != -1)
-        postfix[k++] = pop();
-    postfix[k] = '\0';
-    printf("Postfix: %s\n", postfix);
+
+---
+
+2. Infix to Postfix Conversion
+
+#include <stdio.h>
+#include <ctype.h>
+#define MAX 100
+
+char stack[MAX];
+int top = -1;
+
+void push(char x) {
+    stack[++top] = x;
+}
+
+char pop() {
+    if (top == -1) return -1;
+    else return stack[top--];
+}
+
+int precedence(char x) {
+    if (x == '(') return 0;
+    if (x == '+' || x == '-') return 1;
+    if (x == '*' || x == '/') return 2;
+    return 0;
 }
 
 int main() {
-    char infix[50];
+    char exp[MAX], x;
     printf("Enter infix expression: ");
-    scanf("%s", infix);
-    infixToPostfix(infix);
+    scanf("%s", exp);
+    printf("Postfix: ");
+    for (int i = 0; exp[i] != '\0'; i++) {
+        if (isalnum(exp[i]))
+            printf("%c", exp[i]);
+        else if (exp[i] == '(')
+            push(exp[i]);
+        else if (exp[i] == ')') {
+            while ((x = pop()) != '(')
+                printf("%c", x);
+        } else {
+            while (top != -1 && precedence(stack[top]) >= precedence(exp[i]))
+                printf("%c", pop());
+            push(exp[i]);
+        }
+    }
+    while (top != -1)
+        printf("%c", pop());
+    printf("\n");
+    return 0;
 }
-
-Sample Output:
-
-Enter infix expression: A+B*C
-Postfix: ABC*+
 
 
 ---
 
-3. Linear and Binary Search (User Input)
+3. Linear Search and Binary Search
 
 #include <stdio.h>
 
 int linearSearch(int arr[], int n, int key) {
     for (int i = 0; i < n; i++)
-        if (arr[i] == key)
-            return i;
+        if (arr[i] == key) return i;
     return -1;
 }
 
 int binarySearch(int arr[], int n, int key) {
-    int low = 0, high = n - 1;
+    int low = 0, high = n - 1, mid;
     while (low <= high) {
-        int mid = (low + high) / 2;
-        if (arr[mid] == key)
-            return mid;
-        else if (arr[mid] < key)
-            low = mid + 1;
-        else
-            high = mid - 1;
+        mid = (low + high)/2;
+        if (arr[mid] == key) return mid;
+        else if (arr[mid] < key) low = mid + 1;
+        else high = mid - 1;
     }
     return -1;
 }
 
 int main() {
-    int n, key, arr[100];
+    int n, key;
     printf("Enter number of elements: ");
     scanf("%d", &n);
-
-    printf("Enter %d elements (sorted for binary search): ", n);
+    int arr[n];
+    printf("Enter elements: ");
     for (int i = 0; i < n; i++)
         scanf("%d", &arr[i]);
-
     printf("Enter key to search: ");
     scanf("%d", &key);
 
-    int lin = linearSearch(arr, n, key);
-    int bin = binarySearch(arr, n, key);
+    int pos = linearSearch(arr, n, key);
+    if (pos != -1)
+        printf("Linear Search: Found at position %d\n", pos+1);
+    else
+        printf("Linear Search: Not found\n");
 
-    if (lin != -1) printf("Linear Search: Found at index %d\n", lin);
-    else printf("Linear Search: Not found\n");
+    pos = binarySearch(arr, n, key);
+    if (pos != -1)
+        printf("Binary Search: Found at position %d\n", pos+1);
+    else
+        printf("Binary Search: Not found\n");
 
-    if (bin != -1) printf("Binary Search: Found at index %d\n", bin);
-    else printf("Binary Search: Not found\n");
+    return 0;
 }
 
-Sample Output:
 
-Enter number of elements: 5
-Enter 5 elements (sorted for binary search): 10 20 30 40 50
-Enter key to search: 30
-Linear Search: Found at index 2
-Binary Search: Found at index 2
+---
+
+This format separates each algorithm, makes it readable on GitHub, and can be copy-pasted directly into your README.
+
+I can also add input/output examples for each code snippet to make the README more professional. Do you want me to do that?
 
